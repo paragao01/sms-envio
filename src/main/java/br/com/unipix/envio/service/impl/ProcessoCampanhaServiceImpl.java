@@ -73,7 +73,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		LocalDateTime dataInicioProcesso = LocalDateTime.now();
 		LocalDateTime data = processo.getMinuto();
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
-		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO);
+		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
 		if(campanhasAgendadas != null) {
 			campanhasAgendadas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
 				@SuppressWarnings("deprecation")
@@ -93,7 +93,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						}
 						campanhaMongoRepository.updateStatusSms(data, StatusSmsEnum.EM_PROCESSAMENTO);
 						send(smsAgendados, campanha.getIdCampanhaSql());	
-						page.next();
+						page = page.next();
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
 					completarCampanha(campanha, data);
