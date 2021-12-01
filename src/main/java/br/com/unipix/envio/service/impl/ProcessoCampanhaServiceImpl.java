@@ -132,7 +132,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		StatusCampanhaEnum status = StatusCampanhaEnum.AGENDADO;
 		if(data != null) {
 			for ( CampanhaAgendada e :campanha.getAgendamentos()) {
-				if(e.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO)) {
+				if(e.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName())) {
 					if(e.getData().compareTo(data) != 0) {
 						completa = false;					
 					}
