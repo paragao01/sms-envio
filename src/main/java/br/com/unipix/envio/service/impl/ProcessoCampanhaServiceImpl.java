@@ -89,7 +89,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						smsAgendados = campanhaMongoRepository.
 								buscarSmsAgendado(data, campanha.getIdCampanhaSql(),StatusSmsEnum.ESPERA.getName(), page);
 						Boolean pausa = pausa(campanha.getIdCampanhaSql());
-						if(smsAgendados.size() <= 0 && pausa) {
+						if(smsAgendados.size() <= 0 || pausa) {
 							x = false;
 						}
 						campanhaMongoRepository.updateStatusSms(data, StatusSmsEnum.EM_PROCESSAMENTO);
