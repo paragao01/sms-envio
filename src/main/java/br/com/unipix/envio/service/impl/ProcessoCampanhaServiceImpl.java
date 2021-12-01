@@ -58,11 +58,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	@Override
 	public ProcessoCampanha obterUltimoProcesso() {
 		ProcessoCampanha minuto = repository.obterUltimoProcesso();
-		
-		
 		LocalDateTime dataAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-		System.out.println("Data do banco: "+minuto.getMinuto()!=null?minuto.getMinuto():"Nada");
-		System.out.println("Data Atual: "+dataAtual);
 		if(minuto != null) {
 			if(minuto.getMinuto().compareTo(dataAtual)<0) {
 				return minuto;
