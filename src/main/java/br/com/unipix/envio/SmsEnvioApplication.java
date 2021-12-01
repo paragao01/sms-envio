@@ -23,8 +23,8 @@ public class SmsEnvioApplication implements CommandLineRunner {
 	
 	
 	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 		SpringApplication.run(SmsEnvioApplication.class, args);
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 	}
 
 	@Override
