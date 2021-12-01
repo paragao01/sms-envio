@@ -61,7 +61,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		ProcessoCampanha minuto = repository.obterUltimoProcesso();
 		LocalDateTime dataAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		if(minuto != null) {
-			if(minuto.getMinuto().compareTo(dataAtual)<=0) {
+			if(minuto.getMinuto().compareTo(dataAtual.minusMinutes(1))<0) {
 				return minuto;
 			}
 		}

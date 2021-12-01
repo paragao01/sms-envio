@@ -12,7 +12,7 @@ import br.com.unipix.envio.mongo.model.CampanhaDashboard;
 @Repository
 public interface CampanhaDashboarRepository extends MongoRepository<CampanhaDashboard, String>, CampanhaDashboardRepositoryManual{
 
-	@Query("{'agendamentos.data':{$lte : ?0},'status': ?1, 'confirmada':true}")
+	@Query("{'agendamentos.data':{$gte : ?0},'status': ?1, 'confirmada':true}")
 	List<CampanhaDashboard> obterCampanhasAgendadas(LocalDateTime data, String status);
 	
 	@Query("{'status': ?0, 'confirmada': true}")
