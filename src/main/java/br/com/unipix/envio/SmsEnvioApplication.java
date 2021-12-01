@@ -1,10 +1,5 @@
 package br.com.unipix.envio;
 
-import java.util.Date;
-import java.util.TimeZone;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +21,6 @@ public class SmsEnvioApplication implements CommandLineRunner {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(SmsEnvioApplication.class, args);
-	}
-
-	@PostConstruct
-	private void init() {
-		System.out.println("Iniciando em "+ new Date());
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
-		System.out.println("Alterado para "+ new Date());
 	}
 	
 	@Override
