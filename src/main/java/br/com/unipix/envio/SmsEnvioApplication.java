@@ -30,8 +30,9 @@ public class SmsEnvioApplication implements CommandLineRunner {
 
 	@PostConstruct
 	private void init() {
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 		System.out.println("Iniciando em "+ new Date());
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		System.out.println("Alterado para "+ new Date());
 	}
 	
 	@Override
