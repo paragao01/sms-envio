@@ -55,7 +55,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	@Autowired
 	private Gson jsonConverter;
 	
-	
 	@Override
 	public ProcessoCampanha obterUltimoProcesso() {
 		ProcessoCampanha minuto = repository.obterUltimoProcesso();
