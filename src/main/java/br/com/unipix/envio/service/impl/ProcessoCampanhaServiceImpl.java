@@ -1,7 +1,6 @@
 package br.com.unipix.envio.service.impl;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +59,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	@Override
 	public ProcessoCampanha obterUltimoProcesso() {
 		ProcessoCampanha minuto = repository.obterUltimoProcesso();
-		LocalDateTime dataAtual = LocalDateTime.now().atZone(ZoneId.of("GMT-3")).toLocalDateTime().truncatedTo(ChronoUnit.MINUTES);
+		LocalDateTime dataAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		if(minuto != null) {
 			if(minuto.getMinuto().compareTo(dataAtual)<0) {
 				return minuto;
