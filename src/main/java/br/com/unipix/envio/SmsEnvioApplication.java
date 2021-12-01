@@ -1,6 +1,9 @@
 package br.com.unipix.envio;
 
+import java.util.Date;
 import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +24,16 @@ public class SmsEnvioApplication implements CommandLineRunner {
 	@Autowired
 	private ProcessoCampanhaService processoService;
 	
-	
 	public static void main(String[] args) {
 		SpringApplication.run(SmsEnvioApplication.class, args);
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 	}
 
+	@PostConstruct
+	private void init() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		System.out.println("Iniciando em "+ new Date());
+	}
+	
 	@Override
 	public void run(String... args) throws Exception {
 		int threadId = 3;
