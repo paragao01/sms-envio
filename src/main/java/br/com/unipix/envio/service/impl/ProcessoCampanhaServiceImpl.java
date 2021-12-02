@@ -26,7 +26,6 @@ import br.com.unipix.envio.enumeration.StatusProcessoEnum;
 import br.com.unipix.envio.enumeration.StatusSmsEnum;
 import br.com.unipix.envio.model.CampanhaKafka;
 import br.com.unipix.envio.model.ProcessoCampanha;
-import br.com.unipix.envio.mongo.model.CampanhaAgendada;
 import br.com.unipix.envio.mongo.model.CampanhaDashboard;
 import br.com.unipix.envio.mongo.model.CampanhaDocument;
 import br.com.unipix.envio.mongo.repository.CampanhaDashboarRepository;
@@ -95,7 +94,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						page = page.next();
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
-					completarCampanha(campanha, data);
 				}catch(Exception e){
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.FALHA, campanha.getId());
 				}
@@ -126,24 +124,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		}
 		return false;
 	}
-	@Transactional
-	public void completarCampanha(CampanhaDashboard campanha, LocalDateTime data) {
-		Boolean completa = true;
-		StatusCampanhaEnum status = StatusCampanhaEnum.AGENDADO;
-		if(data != null) {
-			for ( CampanhaAgendada e :campanha.getAgendamentos()) {
-				if(e.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName())) {
-					if(e.getData().compareTo(data) != 0) {
-						completa = false;					
-					}
-				}
-			}
-		}
-		if(completa) {
-			status = StatusCampanhaEnum.COMPLETO;
-		}
-		campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), status);
-	}
+
 	
 	@Transactional
 	public void send(List<CampanhaDocument> documentos, Long idCampanhaSql) {
@@ -193,7 +174,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 						page = page.next();
 					}
-					completarCampanha(campanha, null);
 				}catch(Exception e){
 					campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.PAUSADO);
 				}
