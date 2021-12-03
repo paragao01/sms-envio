@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import br.com.unipix.envio.enumeration.StatusSmsEnum;
-import br.com.unipix.envio.mongo.model.CampanhaDashboard;
+import br.com.unipix.envio.mongo.model.CampanhaDocument;
 import br.com.unipix.envio.mongo.repository.CampanhaDocumentRepositoryManual;
 
 public class CampanhaDocumentRepositoryManualImpl implements CampanhaDocumentRepositoryManual{
@@ -22,7 +22,7 @@ public class CampanhaDocumentRepositoryManualImpl implements CampanhaDocumentRep
 	public void updateStatusSms(LocalDateTime data, StatusSmsEnum status) {
 		Query query = new Query(new Criteria("dataAgendada").is(data));
 		Update update = Update.update("status", status.getName());
-		mongoTemplate.updateMulti(query, update, CampanhaDashboard.class);
+		mongoTemplate.updateMulti(query, update, CampanhaDocument.class);
 	}
 
 
@@ -30,6 +30,6 @@ public class CampanhaDocumentRepositoryManualImpl implements CampanhaDocumentRep
 	public void updateStatusSms(Long idCampanhaSql, StatusSmsEnum status) {
 		Query query = new Query(new Criteria("idCampanhaSql").is(idCampanhaSql));
 		Update update = Update.update("status", status.getName());
-		mongoTemplate.updateMulti(query, update, CampanhaDashboard.class);
+		mongoTemplate.updateMulti(query, update, CampanhaDocument.class);
 	}
 }

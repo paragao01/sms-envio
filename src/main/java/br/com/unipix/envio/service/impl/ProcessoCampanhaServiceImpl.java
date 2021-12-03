@@ -179,7 +179,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
 				}
-	
 		}));
 		try {
 			executorService.shutdown();
