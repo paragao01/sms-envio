@@ -59,7 +59,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		ProcessoCampanha minuto = repository.obterUltimoProcesso();
 		LocalDateTime dataAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 		if(minuto != null) {
-			if(minuto.getMinuto().compareTo(dataAtual)<0) {
+			if(minuto.getMinuto().compareTo(dataAtual)<=0) {
 				return minuto;
 			}
 		}
@@ -87,7 +87,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						Boolean pausa = pausa(campanha.getIdCampanhaSql());
 						if(smsAgendados.size() <= 0 || pausa) {
 							log.info(String.format("Envio de campanha: %s, de id %d finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
-
 							x = false;
 						}
 						log.info(String.format("Processando envio agendado da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
@@ -97,7 +96,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
 				}catch(Exception e){
-					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.FALHA, campanha.getId());
+					System.out.println(e.getStackTrace());
 				}
 			}));
 			try {

@@ -13,9 +13,10 @@ import br.com.unipix.envio.mongo.model.CampanhaDocument;
 @Repository
 public interface CampanhaDocumentRepository extends MongoRepository<CampanhaDocument, String>, CampanhaDocumentRepositoryManual{
 	
-	@Query(value = "{'dataAgendada': ?0,'idCampanhaSql':?1, 'status': ?2}")
+	@Query(value = "{'dataAgendada': {$lte:?0},'idCampanhaSql':?1, 'status': ?2}")
 	List<CampanhaDocument> buscarSmsAgendado(LocalDateTime data, Long idCampanha, String status, Pageable page);
 	
 	@Query(value = "{'idCampanhaSql':?0, 'status':?1}")
 	List<CampanhaDocument> buscarSms(Long idCampanha, String status, Pageable page);
 }
+                                                                              
