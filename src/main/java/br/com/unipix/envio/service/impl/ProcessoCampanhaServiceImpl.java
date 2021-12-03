@@ -76,7 +76,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 			campanhasAgendadas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
-				log.info(String.format("Processando envio agendado da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 				try {
 					campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.ENVIANDO);
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSANDO, campanha.getId());
@@ -87,8 +86,11 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 								buscarSmsAgendado(data, campanha.getIdCampanhaSql(),StatusSmsEnum.ESPERA.getName(), page);
 						Boolean pausa = pausa(campanha.getIdCampanhaSql());
 						if(smsAgendados.size() <= 0 || pausa) {
+							log.info(String.format("Envio de campanha: %s, de id %d finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
+
 							x = false;
 						}
+						log.info(String.format("Processando envio agendado da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 						campanhaMongoRepository.updateStatusSms(data, StatusSmsEnum.EM_PROCESSAMENTO);
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 						page = page.next();
@@ -162,20 +164,21 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 					List<CampanhaDocument> smsAgendados = new ArrayList<>();
 					Boolean x = true;
 					while(x) {
-						log.info(String.format("Processando envio da campanha: %s, de id %d, pagina %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql(), page.getPageNumber()));
 						smsAgendados = campanhaMongoRepository.
 								buscarSms(campanha.getIdCampanhaSql(),StatusSmsEnum.AGUARDANDO_PROCESSAMENTO.getName(), page);
 						
 						if(smsAgendados.size() <= 0) {
+							log.info(String.format("Envio de campanha: %s, de id %d Finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 							x = false;
 							break;
 						}
+						log.info(String.format("Processando envio da campanha: %s, de id %d, pagina %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql(), page.getPageNumber()));
 						campanhaMongoRepository.updateStatusSms(campanha.getIdCampanhaSql(),StatusSmsEnum.EM_PROCESSAMENTO);
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 						page = page.next();
 					}
 				}catch(Exception e){
-					campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.PAUSADO);
+					System.out.println(e.getStackTrace());
 				}
 	
 		}));
