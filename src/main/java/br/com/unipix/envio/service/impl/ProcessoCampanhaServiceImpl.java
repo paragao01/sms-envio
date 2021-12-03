@@ -141,8 +141,8 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 				json.add(kafka);
 		});
 		if(json.size() > 0) {
-			campanhaMongoRepository.updateStatusSms(idCampanhaSql, StatusSmsEnum.ENVIANDO);
 			kafkaTemplate.send("sms", jsonConverter.toJson(json));			
+			campanhaMongoRepository.updateStatusSms(idCampanhaSql, StatusSmsEnum.ENVIANDO);
 		}
 		System.out.println("Enviando "+documentos.size()+" sms");
 	}
