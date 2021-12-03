@@ -155,6 +155,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		List<CampanhaDashboard> campanhas = campanhaDashboardRepository.obterCampanhas(StatusCampanhaEnum.ENVIANDO.getName());
 		if(campanhas != null) {
 			campanhas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
+				campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.ENVIANDO);
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
 				log.info(String.format("Processando envio da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
