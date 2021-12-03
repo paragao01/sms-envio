@@ -142,7 +142,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		});
 		if(json.size() > 0) {
 			kafkaTemplate.send("sms", jsonConverter.toJson(json));			
-			campanhaMongoRepository.updateStatusSms(idCampanhaSql, StatusSmsEnum.ENVIANDO);
+			campanhaMongoRepository.updateStatusSms(documentos, StatusSmsEnum.ENVIANDO);
 		}
 		System.out.println("Enviando "+documentos.size()+" sms");
 	}
@@ -173,7 +173,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 							break;
 						}
 						log.info(String.format("Processando envio da campanha: %s, de id %d, pagina %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql(), page.getPageNumber()));
-						campanhaMongoRepository.updateStatusSms(campanha.getIdCampanhaSql(),StatusSmsEnum.EM_PROCESSAMENTO);
+						campanhaMongoRepository.updateStatusSms(smsAgendados,StatusSmsEnum.EM_PROCESSAMENTO);
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 						page = page.next();
 					}

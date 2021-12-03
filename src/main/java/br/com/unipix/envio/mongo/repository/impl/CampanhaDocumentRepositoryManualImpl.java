@@ -1,6 +1,8 @@
 package br.com.unipix.envio.mongo.repository.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,8 +29,9 @@ public class CampanhaDocumentRepositoryManualImpl implements CampanhaDocumentRep
 
 
 	@Override
-	public void updateStatusSms(Long idCampanhaSql, StatusSmsEnum status) {
-		Query query = new Query(new Criteria("idCampanhaSql").is(idCampanhaSql));
+	public void updateStatusSms(List<CampanhaDocument> documentos, StatusSmsEnum status) {
+		List<String> ids = documentos.stream().map(d -> d.getId()).collect(Collectors.toList()); 
+		Query query = new Query(new Criteria("_id").in(ids));
 		Update update = Update.update("status", status.getName());
 		mongoTemplate.updateMulti(query, update, CampanhaDocument.class);
 	}
