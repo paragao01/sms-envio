@@ -18,8 +18,10 @@ public interface CampanhaDashboarRepository extends MongoRepository<CampanhaDash
 	@Query("{'status': ?0, 'confirmada': true}")
 	List<CampanhaDashboard> obterCampanhas(String status);
 	
-	@Query("{'status':'PAUSADO', 'confirmada':true}")
+	@Query("{'status':'Pausado', 'confirmada':true, 'idCampanhaSql':?0}")
 	CampanhaDashboard obterCampanhaPausada(Long idCampanhaSql);
 	
+	@Query("{'idCampanhaSql':?0}")
+	CampanhaDashboard obterCampanha(Long idCampanhaSql);
 }
 	

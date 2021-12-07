@@ -17,6 +17,7 @@ import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -26,6 +27,7 @@ import br.com.unipix.envio.enumeration.StatusProcessoEnum;
 import br.com.unipix.envio.enumeration.StatusSmsEnum;
 import br.com.unipix.envio.model.CampanhaKafka;
 import br.com.unipix.envio.model.ProcessoCampanha;
+import br.com.unipix.envio.mongo.model.CampanhaAgendada;
 import br.com.unipix.envio.mongo.model.CampanhaDashboard;
 import br.com.unipix.envio.mongo.model.CampanhaDocument;
 import br.com.unipix.envio.mongo.repository.CampanhaDashboarRepository;
@@ -66,14 +68,13 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		return null;
 	}
 	
-	@Transactional
 	public void enviarCampanhaAgendada(ProcessoCampanha processo) {
 		LocalDateTime dataInicioProcesso = LocalDateTime.now();
 		LocalDateTime data = processo.getMinuto();
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
 		if(campanhasAgendadas != null) {
-			campanhasAgendadas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
+			campanhasAgendadas.stream().parallel().forEachOrdered(campanha ->  {
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
 				try {
@@ -85,20 +86,19 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						smsAgendados = campanhaMongoRepository.
 								buscarSmsAgendado(data, campanha.getIdCampanhaSql(),StatusSmsEnum.ESPERA.getName(), page);
 						Boolean pausa = pausa(campanha.getIdCampanhaSql());
-						if(smsAgendados.size() <= 0 || pausa) {
+						if(smsAgendados.size() <= 0 || pausa ) {
 							log.info(String.format("Envio de campanha: %s, de id %d finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 							x = false;
 						}
 						log.info(String.format("Processando envio agendado da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
-						campanhaMongoRepository.updateStatusSms(data, StatusSmsEnum.EM_PROCESSAMENTO);
 						send(smsAgendados, campanha.getIdCampanhaSql());	
-						page = page.next();
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
+					verificaAgendamentoCampanha(campanha);
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
 				}
-			}));
+			});
 			try {
 				executorService.shutdown();
 				executorService.awaitTermination(3000, TimeUnit.MINUTES);
@@ -118,6 +118,22 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		repository.saveAll(Arrays.asList(novoMinuto, processo));	
 	}
 	
+	@Transactional
+	public void verificaAgendamentoCampanha(CampanhaDashboard campanha) {
+		CampanhaDashboard campanhaDash = campanhaDashboardRepository.obterCampanha(campanha.getIdCampanhaSql());
+		boolean contemAgendamento = false;
+		for(CampanhaAgendada agendamento : campanhaDash.getAgendamentos()) {
+			if(agendamento.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName()) || 
+					agendamento.getStatus().equals(StatusProcessoEnum.FALHA.getName())){
+				contemAgendamento = true;
+			}
+		}
+		
+		if(contemAgendamento) {
+			campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.AGENDADO);
+		}
+	}
+	
 	public Boolean pausa(Long idCampanhaSql) {
 		CampanhaDashboard campanha = campanhaDashboardRepository.obterCampanhaPausada(idCampanhaSql);
 		if(campanha != null) {
@@ -126,10 +142,9 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		return false;
 	}
 
-	
-	@Transactional
 	public void send(List<CampanhaDocument> documentos, Long idCampanhaSql) {
 		List<CampanhaKafka> json = new ArrayList<>();
+		List<String> ids = new ArrayList<>();
 		documentos.forEach(documento -> {
 				CampanhaKafka kafka = CampanhaKafka.builder().
 						smsId(documento.getId()).
@@ -139,43 +154,46 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						mensagem(documento.getMensagem()).
 						build();
 				json.add(kafka);
+				ids.add(documento.getId());
+				
 		});
 		if(json.size() > 0) {
+			
 			kafkaTemplate.send("sms", jsonConverter.toJson(json));			
-			campanhaMongoRepository.updateStatusSms(documentos, StatusSmsEnum.ENVIANDO);
+			
+			Long smsAtualizados = campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.ENVIANDO);
+			System.out.println("Sms atualizados: "+smsAtualizados);
 		}
 		System.out.println("Enviando "+documentos.size()+" sms");
 	}
 
 	@Override
-	@Transactional
+	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
 	public void enviarCampanha() {
-		
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhas = campanhaDashboardRepository.obterCampanhas(StatusCampanhaEnum.ENVIANDO.getName());
+		
 		if(campanhas != null) {
 			campanhas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
-				campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.ENVIADO);
+				
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
 				log.info(String.format("Processando envio da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
-				
 				try {
-					List<CampanhaDocument> smsAgendados = new ArrayList<>();
+					List<CampanhaDocument> sms = new ArrayList<>();
 					Boolean x = true;
 					while(x) {
-						smsAgendados = campanhaMongoRepository.
+						sms = campanhaMongoRepository.
 								buscarSms(campanha.getIdCampanhaSql(),StatusSmsEnum.AGUARDANDO_PROCESSAMENTO.getName(), page);
-						
-						if(smsAgendados.size() <= 0) {
+						Boolean pausa = pausa(campanha.getIdCampanhaSql());
+						if(sms.size() == 0 || pausa) {
 							log.info(String.format("Envio de campanha: %s, de id %d Finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
-							x = false;
-							break;
+							x = false; 
+							break; 
+						}else {
+							log.info(String.format("Processando envio da campanha: %s, de id %d, pagina %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql(), page.getPageNumber()));
+							send(sms, campanha.getIdCampanhaSql());								
 						}
-						log.info(String.format("Processando envio da campanha: %s, de id %d, pagina %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql(), page.getPageNumber()));
-						campanhaMongoRepository.updateStatusSms(smsAgendados,StatusSmsEnum.EM_PROCESSAMENTO);
-						send(smsAgendados, campanha.getIdCampanhaSql());	
-						page = page.next();
 					}
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
@@ -189,5 +207,13 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		}
 	}
 			
+	}
+
+	@Override
+	public void deletarProcessos(ProcessoCampanha processo) {
+		LocalDateTime data = processo.getMinuto().minusDays(1);
+		List<ProcessoCampanha> processos = repository.obterProcessosUltrapassados(data);
+		repository.deleteAll(processos);
+		
 	}
 }

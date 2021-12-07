@@ -4,12 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import br.com.unipix.envio.enumeration.StatusSmsEnum;
-import br.com.unipix.envio.mongo.model.CampanhaDocument;
 
 public interface CampanhaDocumentRepositoryManual {
 
-	public void updateStatusSms(LocalDateTime data, StatusSmsEnum status);
+	void updateStatusSms(LocalDateTime data, StatusSmsEnum status, Long idCampanhaSql);
 	
-	public void updateStatusSms(List<CampanhaDocument> documentos, StatusSmsEnum status);
+	Long updateStatusSms(List<String> ids, Long idCampanhaSql, StatusSmsEnum status);
 
 }

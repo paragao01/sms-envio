@@ -35,5 +35,4 @@ public class CampanhaDashboardRepositoryManualImpl implements CampanhaDashboardR
 		Update update = Update.update("status", status.getName());
 		mongoTemplate.updateFirst(query, update, CampanhaDashboard.class);
 	}
-
 }
