@@ -142,6 +142,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		return false;
 	}
 
+	@Transactional
 	public void send(List<CampanhaDocument> documentos, Long idCampanhaSql) {
 		List<CampanhaKafka> json = new ArrayList<>();
 		List<String> ids = new ArrayList<>();
@@ -168,7 +169,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	}
 
 	@Override
-	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+	@Transactional
 	public void enviarCampanha() {
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhas = campanhaDashboardRepository.obterCampanhas(StatusCampanhaEnum.ENVIANDO.getName());

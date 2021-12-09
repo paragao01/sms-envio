@@ -1,5 +1,6 @@
 package br.com.unipix.envio.mongo.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -14,4 +15,5 @@ import lombok.NoArgsConstructor;
 public class CampanhaAgendada {
 	private LocalDateTime data;
 	private String status;
+	private BigDecimal quantidade;
 }
