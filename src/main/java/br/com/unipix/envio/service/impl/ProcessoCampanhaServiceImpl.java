@@ -181,7 +181,14 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		
 		if(campanhas != null) {
 			campanhas.stream().parallel().forEachOrdered(campanha -> executorService.execute(() -> {
+				Long enviados = campanha.getEnviados()!=null?campanha.getEnviados():0L;
+				Long validos =  campanha.getValidos()!=null?campanha.getValidos():0L;
 				
+				if(enviados.compareTo(validos) == 0) {
+					campanha.setStatus(StatusCampanhaEnum.COMPLETO.getName());
+					campanhaDashboardRepository.save(campanha);
+					return;
+				}
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
 				log.info(String.format("Processando envio da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
