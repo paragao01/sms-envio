@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -139,6 +139,11 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		if(campanha != null) {
 			return true;
 		}
+		
+		List<CampanhaDocument> sms = campanhaMongoRepository.
+				buscarSms(idCampanhaSql,StatusSmsEnum.PAUSADO.getName());
+		List<String> ids = sms.stream().map(s -> s.getId()).collect(Collectors.toList());
+		campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO);
 		return false;
 	}
 
@@ -184,9 +189,9 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 					List<CampanhaDocument> sms = new ArrayList<>();
 					Boolean x = true;
 					while(x) {
+						Boolean pausa = pausa(campanha.getIdCampanhaSql());
 						sms = campanhaMongoRepository.
 								buscarSms(campanha.getIdCampanhaSql(),StatusSmsEnum.AGUARDANDO_PROCESSAMENTO.getName(), page);
-						Boolean pausa = pausa(campanha.getIdCampanhaSql());
 						if(sms.size() == 0 || pausa) {
 							log.info(String.format("Envio de campanha: %s, de id %d Finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 							x = false; 

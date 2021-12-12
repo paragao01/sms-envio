@@ -18,5 +18,9 @@ public interface CampanhaDocumentRepository extends MongoRepository<CampanhaDocu
 	
 	@Query(value = "{'idCampanhaSql':?0, 'status':?1}")
 	List<CampanhaDocument> buscarSms(Long idCampanha, String status, Pageable page);
+	
+
+	@Query(value = "{'idCampanhaSql':?0, 'status':?1}" )
+	List<CampanhaDocument> buscarSms(Long idCampanha, String status);
 }
                                                                               
