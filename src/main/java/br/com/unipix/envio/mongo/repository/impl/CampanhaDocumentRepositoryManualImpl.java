@@ -32,8 +32,16 @@ public class CampanhaDocumentRepositoryManualImpl implements CampanhaDocumentRep
 
 
 	@Override
+	public Long updateStatusSms(Long idCampanhaSql, StatusSmsEnum status, StatusSmsEnum statusQuery) {
+		Query query = new Query(new Criteria("idCampanhaSql").is(idCampanhaSql).and("status").is(statusQuery));
+		Update update = Update.update("status", status.getName());
+		UpdateResult result = mongoTemplate.updateMulti(query, update, CampanhaDocument.class);
+		return result.getModifiedCount();
+	}
+	
+	@Override
 	public Long updateStatusSms(List<String> ids, Long idCampanhaSql, StatusSmsEnum status) {
-		Query query = new Query(new Criteria("id").in(ids).and("idCampanhaSql").is(idCampanhaSql));
+		Query query = new Query(new Criteria("idCampanhaSql").is(idCampanhaSql).and("id").in(ids));
 		Update update = Update.update("status", status.getName());
 		UpdateResult result = mongoTemplate.updateMulti(query, update, CampanhaDocument.class);
 		return result.getModifiedCount();

@@ -9,6 +9,8 @@ public interface CampanhaDocumentRepositoryManual {
 
 	void updateStatusSms(LocalDateTime data, StatusSmsEnum status, Long idCampanhaSql);
 	
+	Long updateStatusSms(Long idCampanhaSql, StatusSmsEnum status, StatusSmsEnum statusQuery);
+	
 	Long updateStatusSms(List<String> ids, Long idCampanhaSql, StatusSmsEnum status);
 
 }

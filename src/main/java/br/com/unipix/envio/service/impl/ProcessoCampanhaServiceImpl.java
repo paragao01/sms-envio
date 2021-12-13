@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,12 +138,8 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		if(campanha != null) {
 			return true;
 		}
-		if(campanha.getStatus().equals(StatusCampanhaEnum.ENVIANDO.getName())) {
-			List<CampanhaDocument> sms = campanhaMongoRepository.
-					buscarSms(idCampanhaSql,StatusSmsEnum.PAUSADO.getName());
-			List<String> ids = sms.stream().map(s -> s.getId()).collect(Collectors.toList());
-			campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO);			
-		}
+		
+		campanhaMongoRepository.updateStatusSms(idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO, StatusSmsEnum.PAUSADO);			
 		return false;
 	}
 
