@@ -139,11 +139,12 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		if(campanha != null) {
 			return true;
 		}
-		
-		List<CampanhaDocument> sms = campanhaMongoRepository.
-				buscarSms(idCampanhaSql,StatusSmsEnum.PAUSADO.getName());
-		List<String> ids = sms.stream().map(s -> s.getId()).collect(Collectors.toList());
-		campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO);
+		if(campanha.getStatus().equals(StatusCampanhaEnum.ENVIANDO.getName())) {
+			List<CampanhaDocument> sms = campanhaMongoRepository.
+					buscarSms(idCampanhaSql,StatusSmsEnum.PAUSADO.getName());
+			List<String> ids = sms.stream().map(s -> s.getId()).collect(Collectors.toList());
+			campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO);			
+		}
 		return false;
 	}
 

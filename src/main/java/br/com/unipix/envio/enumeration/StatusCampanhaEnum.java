@@ -10,6 +10,7 @@ public enum StatusCampanhaEnum {
 	COMPLETO(1, "Completo"),
 	AGENDADO(3, "Agendado"),
 	ENVIADO(4, "Enviado"),
+	CANCELADO(5, "Cancelado"),
 	PAUSADO(2, "Pausado");
 	
 	private Integer id;
