@@ -16,11 +16,11 @@ public interface CampanhaDocumentRepository extends MongoRepository<CampanhaDocu
 	@Query(value = "{'dataAgendada': {$lte:?0},'idCampanhaSql':?1, 'status': ?2}")
 	List<CampanhaDocument> buscarSmsAgendado(LocalDateTime data, Long idCampanha, String status, Pageable page);
 	
-	@Query(value = "{'idCampanhaSql':?0, 'status':?1}")
+	@Query(value = "{'idCampanhaSql':?0, 'status':?1, 'situacao':'Ativo'}")
 	List<CampanhaDocument> buscarSms(Long idCampanha, String status, Pageable page);
 	
 
-	@Query(value = "{'idCampanhaSql':?0, 'status':?1}" )
+	@Query(value = "{'idCampanhaSql':?0, 'status':?1, 'situacao':'Ativo'}" )
 	List<CampanhaDocument> buscarSms(Long idCampanha, String status);
 }
                                                                               
