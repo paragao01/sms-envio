@@ -19,11 +19,10 @@ public class CentroCustoMongo {
 	
 	private Integer codigo;
 	
-	private Boolean status;
+	private String status;
 	
-	private Boolean solucao;
+	private String solucao;
 	
 	private Date dataRegistro;
 	
-	private Date mudarData;
 }

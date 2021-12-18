@@ -39,6 +39,8 @@ public class CampanhaDashboard {
 	
 	private Long total;
 	
+	private Long idCentroCusto;
+	
 	private Long enviados;
 	
 	private LocalDateTime dataCampanha;
