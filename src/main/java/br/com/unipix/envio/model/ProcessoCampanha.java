@@ -25,4 +25,7 @@ public class ProcessoCampanha {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private LocalDateTime minuto;
+	private LocalDateTime inicioProcesso;
+	private LocalDateTime fimProcesso;
+	private StatusProcessoEnum status;
 }
