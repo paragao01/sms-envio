@@ -7,5 +7,4 @@ public interface ProcessoCampanhaService {
 	ProcessoCampanha obterUltimoProcesso();
 	void enviarCampanhaAgendada(ProcessoCampanha processo);
 	void enviarCampanha();
-	void deletarProcessos(ProcessoCampanha processo);
 }

@@ -63,12 +63,16 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 			if(minuto.getMinuto().compareTo(dataAtual)<=0) {
 				return minuto;
 			}
+		}else {
+			ProcessoCampanha processo = ProcessoCampanha.builder()
+					.minuto(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)).build();
+			repository.save(processo);
 		}
 		return null;
 	}
 	
 	public void enviarCampanhaAgendada(ProcessoCampanha processo) {
-		LocalDateTime dataInicioProcesso = LocalDateTime.now();
+		
 		LocalDateTime data = processo.getMinuto();
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
@@ -106,15 +110,9 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 			}
 		}
 		
-		LocalDateTime dataFimProcesso = LocalDateTime.now();
-		ProcessoCampanha novoMinuto = ProcessoCampanha.builder()
-				.minuto(data.plusMinutes(1))
-				.status(StatusProcessoEnum.NAO_PROCESSADO)
-				.build();
-		processo.setFimProcesso(dataFimProcesso);
-		processo.setInicioProcesso(dataInicioProcesso);
-		processo.setStatus(StatusProcessoEnum.PROCESSADO);
-		repository.saveAll(Arrays.asList(novoMinuto, processo));	
+		ProcessoCampanha p = processo;
+		p.setMinuto(processo.getMinuto().plusMinutes(1));
+		repository.save(p);	
 	}
 	
 	@Transactional
@@ -208,13 +206,5 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		}
 	}
 			
-	}
-
-	@Override
-	public void deletarProcessos(ProcessoCampanha processo) {
-		LocalDateTime data = processo.getMinuto().minusDays(1);
-		List<ProcessoCampanha> processos = repository.obterProcessosUltrapassados(data);
-		repository.deleteAll(processos);
-		
 	}
 }

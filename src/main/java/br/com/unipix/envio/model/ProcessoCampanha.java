@@ -19,13 +19,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "processo_campanha")
+@Table(name = "tb_processo_campanha")
 public class ProcessoCampanha {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private LocalDateTime minuto;
-	private LocalDateTime inicioProcesso;
-	private LocalDateTime fimProcesso;
-	private StatusProcessoEnum status;
 }
