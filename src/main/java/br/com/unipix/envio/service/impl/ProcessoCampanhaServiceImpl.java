@@ -140,11 +140,13 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		}
 		
 		StatusSmsEnum novoStatus = StatusSmsEnum.AGUARDANDO_PROCESSAMENTO;
+		if(campanha.getAgendamentos() != null) {
 			for(CampanhaAgendada a : campanha.getAgendamentos()){
 				if(a.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName())) {
 					novoStatus = StatusSmsEnum.ESPERA;
 				}
 			}
+		}
 		campanhaMongoRepository.updateStatusSms(idCampanhaSql, novoStatus, StatusSmsEnum.PAUSADO);			
 		return false;
 	}
