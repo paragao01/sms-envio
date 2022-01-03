@@ -134,12 +134,18 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	}
 	
 	public Boolean pausa(Long idCampanhaSql) {
-		CampanhaDashboard campanha = campanhaDashboardRepository.obterCampanhaPausada(idCampanhaSql);
-		if(campanha != null) {
+		CampanhaDashboard campanha = campanhaDashboardRepository.obterCampanha(idCampanhaSql);
+		if(campanha != null && campanha.getStatus().equals(StatusCampanhaEnum.PAUSADO.getName())) {
 			return true;
 		}
 		
-		campanhaMongoRepository.updateStatusSms(idCampanhaSql, StatusSmsEnum.AGUARDANDO_PROCESSAMENTO, StatusSmsEnum.PAUSADO);			
+		StatusSmsEnum novoStatus = StatusSmsEnum.AGUARDANDO_PROCESSAMENTO;
+			for(CampanhaAgendada a : campanha.getAgendamentos()){
+				if(a.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName())) {
+					novoStatus = StatusSmsEnum.ESPERA;
+				}
+			}
+		campanhaMongoRepository.updateStatusSms(idCampanhaSql, novoStatus, StatusSmsEnum.PAUSADO);			
 		return false;
 	}
 
@@ -162,7 +168,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 		if(json.size() > 0) {
 			
 			kafkaTemplate.send("sms", jsonConverter.toJson(json));			
-			
 			Long smsAtualizados = campanhaMongoRepository.updateStatusSms(ids, idCampanhaSql, StatusSmsEnum.ENVIANDO);
 			System.out.println("Sms atualizados: "+smsAtualizados);
 		}

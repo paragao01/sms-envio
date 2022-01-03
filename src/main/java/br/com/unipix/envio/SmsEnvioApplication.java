@@ -32,6 +32,7 @@ public class SmsEnvioApplication implements CommandLineRunner {
 				ProcessoCampanha minuto = processoService.obterUltimoProcesso();
 				if(minuto != null) {
 					processoService.enviarCampanhaAgendada(minuto);
+					//processoService.enviarCampanhaAgendadaFalha(minuto);
 					processoService.deletarProcessos(minuto);
 				}
 				break;
