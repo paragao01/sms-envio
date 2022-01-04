@@ -36,7 +36,7 @@ import br.com.unipix.envio.service.ProcessoCampanhaService;
 
 @Service
 public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
-	
+	 
 
 	Logger log = LoggerFactory.getLogger(ProcessoCampanhaService.class);
 
