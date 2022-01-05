@@ -23,5 +23,8 @@ public interface CampanhaDashboarRepository extends MongoRepository<CampanhaDash
 	
 	@Query("{'idCampanhaSql':?0}")
 	CampanhaDashboard obterCampanha(Long idCampanhaSql);
+	
+	@Query("{'agendamentos.status':?0,'idCampanhaSql':?1}")
+	CampanhaDashboard obterCampanhaAgendado(String status, Long idCampanhaSql);
 }
 	

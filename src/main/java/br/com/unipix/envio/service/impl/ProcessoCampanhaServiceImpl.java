@@ -119,16 +119,9 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	
 	@Transactional
 	public void verificaAgendamentoCampanha(CampanhaDashboard campanha) {
-		CampanhaDashboard campanhaDash = campanhaDashboardRepository.obterCampanha(campanha.getIdCampanhaSql());
-		boolean contemAgendamento = false;
-		for(CampanhaAgendada agendamento : campanhaDash.getAgendamentos()) {
-			if(agendamento.getStatus().equals(StatusProcessoEnum.NAO_PROCESSADO.getName()) || 
-					agendamento.getStatus().equals(StatusProcessoEnum.FALHA.getName())){
-				contemAgendamento = true;
-			}
-		}
-		
-		if(contemAgendamento) {
+		CampanhaDashboard campanhaDash = campanhaDashboardRepository.
+				obterCampanhaAgendado(StatusProcessoEnum.NAO_PROCESSADO.getName(), campanha.getIdCampanhaSql());
+		if(campanhaDash != null) {
 			campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.AGENDADO);
 		}
 	}
