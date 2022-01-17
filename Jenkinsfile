@@ -37,7 +37,7 @@ pipeline {
                     sshCommand remote: remote, command: " echo nexus63987 | sudo -S docker pull 177.53.20.16:5001/sms-envio:${BUILD_NUMBER}"
                     sshCommand remote: remote, command: " echo nexus63987 | sudo -S docker stop sms-envio || true"
                     sshCommand remote: remote, command: " echo nexus63987 | sudo -S docker rm sms-envio || true"
-                    sshCommand remote: remote, command: " echo nexus63987 | sudo -S docker container run --network intranet -v /opt/envio-sms:/opt/envio-sms -h sms-envio -d --name sms-envio -p 8083:8083 vonex/sms_envio:${BUILD_NUMBER}"
+                    sshCommand remote: remote, command: " echo nexus63987 | sudo -S docker container run --network intranet -v /opt/envio-sms:/opt/envio-sms -h sms-envio -d --name sms-envio -p 8083:8083 vonex/sms-envio:${BUILD_NUMBER}"
                  }
               }
             }
