@@ -77,7 +77,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
 				try {
-					campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.ENVIANDO);
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSANDO, campanha.getId());
 					List<CampanhaDocument> smsAgendados = new ArrayList<>();
 					Boolean x = true;
@@ -93,7 +92,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
-					verificaAgendamentoCampanha(campanha);
+					//verificaAgendamentoCampanha(campanha);
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
 				}
