@@ -23,7 +23,7 @@ public class CampanhaDashboardRepositoryManualImpl implements CampanhaDashboardR
 	
 	@Override
 	public void updateStatusAgendado(LocalDateTime data, StatusProcessoEnum status, String id) {
-		Query query = new Query(new Criteria("agendamentos.data").lte(data).and("_id").is(id));
+		Query query = new Query(new Criteria("agendamentos.data").lte(data).and("_id").is(id).and("agendamentos.status").ne("Processado"));
 		Update update = Update.update("agendamentos.$.status", status.getName());
 		mongoTemplate.updateMulti(query, update, CampanhaDashboard.class);
 	}
