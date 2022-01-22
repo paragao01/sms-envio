@@ -1,5 +1,6 @@
 package br.com.unipix.envio;
 
+import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class SmsEnvioApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 		int threadId = 3;
 		while (true) {
 			switch (threadId % 2) {
