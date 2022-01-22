@@ -23,7 +23,7 @@ public class CampanhaDashboardRepositoryManualImpl implements CampanhaDashboardR
 	
 	@Override
 	public void updateStatusAgendado(LocalDateTime data, StatusProcessoEnum status, String id) {
-		Query query = new Query(new Criteria("agendamentos.data").is(data).and("_id").is(id));
+		Query query = new Query(new Criteria("agendamentos.data").is(data).and("id").is(id));
 		Update update = Update.update("agendamentos.$.status", status.getName());
 		mongoTemplate.updateFirst(query, update, CampanhaDashboard.class);
 	}
@@ -31,7 +31,7 @@ public class CampanhaDashboardRepositoryManualImpl implements CampanhaDashboardR
 
 	@Override
 	public void updateStatusCampanha(String id, StatusCampanhaEnum status) {
-		Query query = new Query(new Criteria("_id").is(id));
+		Query query = new Query(new Criteria("id").is(id));
 		Update update = Update.update("status", status.getName());
 		mongoTemplate.updateFirst(query, update, CampanhaDashboard.class);
 	}
