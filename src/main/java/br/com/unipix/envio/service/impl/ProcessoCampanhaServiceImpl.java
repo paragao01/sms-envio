@@ -70,6 +70,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	public void enviarCampanhaAgendada(ProcessoCampanha processo) {
 		LocalDateTime dataInicioProcesso = LocalDateTime.now();
 		LocalDateTime data = processo.getMinuto();
+		System.out.println("Data atual: "+dataInicilProcesso+"\tdataBanco: "+data);
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
 		if(campanhasAgendadas != null) {
