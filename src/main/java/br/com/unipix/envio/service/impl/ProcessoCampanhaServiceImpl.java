@@ -77,7 +77,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 			campanhasAgendadas.stream().parallel().forEachOrdered(campanha ->  {
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
-//				try {
+				try {
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSANDO, campanha.getId());
 					List<CampanhaDocument> smsAgendados = new ArrayList<>();
 					Boolean x = true;
@@ -94,9 +94,9 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
 					//verificaAgendamentoCampanha(campanha);
-//				}catch(Exception e){
-//					System.out.println(e.getStackTrace());
-//				}
+				}catch(Exception e){
+					System.out.println(e.getStackTrace());
+				}
 			});
 			try {
 				executorService.shutdown();
