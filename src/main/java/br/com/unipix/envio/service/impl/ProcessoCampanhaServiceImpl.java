@@ -70,14 +70,14 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	public void enviarCampanhaAgendada(ProcessoCampanha processo) {
 		LocalDateTime dataInicioProcesso = LocalDateTime.now();
 		LocalDateTime data = processo.getMinuto();
+		//System.out.println("Data atual: "+dataInicioProcesso+"\tdataBanco: "+data);
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
 		if(campanhasAgendadas != null) {
 			campanhasAgendadas.stream().parallel().forEachOrdered(campanha ->  {
 				@SuppressWarnings("deprecation")
 				Pageable page = new QPageRequest(0, 1000, QSort.unsorted());
-				try {
-					campanhaDashboardRepository.updateStatusCampanha(campanha.getId(), StatusCampanhaEnum.ENVIANDO);
+//				try {
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSANDO, campanha.getId());
 					List<CampanhaDocument> smsAgendados = new ArrayList<>();
 					Boolean x = true;
@@ -93,10 +93,10 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 					}
 					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
-					verificaAgendamentoCampanha(campanha);
-				}catch(Exception e){
-					System.out.println(e.getStackTrace());
-				}
+					//verificaAgendamentoCampanha(campanha);
+//				}catch(Exception e){
+//					System.out.println(e.getStackTrace());
+//				}
 			});
 			try {
 				executorService.shutdown();
