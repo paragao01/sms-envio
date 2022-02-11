@@ -70,7 +70,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 	public void enviarCampanhaAgendada(ProcessoCampanha processo) {
 		LocalDateTime dataInicioProcesso = LocalDateTime.now();
 		LocalDateTime data = processo.getMinuto();
-		//System.out.println("Data atual: "+dataInicioProcesso+"\tdataBanco: "+data);
 		ExecutorService executorService = Executors.newFixedThreadPool(24);
 		List<CampanhaDashboard> campanhasAgendadas = campanhaDashboardRepository.obterCampanhasAgendadas(data, StatusCampanhaEnum.AGENDADO.getName());
 		if(campanhasAgendadas != null) {
@@ -92,8 +91,6 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						log.info(String.format("Processando envio agendado da campanha: %s, de id %d", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 						send(smsAgendados, campanha.getIdCampanhaSql());	
 					}
-					campanhaDashboardRepository.updateStatusAgendado(data, StatusProcessoEnum.PROCESSADO, campanha.getId());
-					//verificaAgendamentoCampanha(campanha);
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
 				}
@@ -188,7 +185,7 @@ public class ProcessoCampanhaServiceImpl implements ProcessoCampanhaService{
 						sms = campanhaMongoRepository.
 								buscarSms(campanha.getIdCampanhaSql(),StatusSmsEnum.AGUARDANDO_PROCESSAMENTO.getName(), page);
 						if(sms.size() == 0 || pausa) {
-							log.info(String.format("Envio de campanha: %s, de id %d Finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
+							//log.info(String.format("Envio de campanha: %s, de id %d Finalizado", campanha.getNomeCampanha(), campanha.getIdCampanhaSql()));
 							x = false; 
 							break; 
 						}else {
