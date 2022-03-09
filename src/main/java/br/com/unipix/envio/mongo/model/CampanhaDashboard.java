@@ -43,6 +43,8 @@ public class CampanhaDashboard {
 	
 	private Long enviados;
 	
+	private Long enviosUnitarios;
+	
 	private LocalDateTime dataCampanha;
 	
 	private List<CampanhaAgendada> agendamentos;
