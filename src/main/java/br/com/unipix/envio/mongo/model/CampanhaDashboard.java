@@ -47,6 +47,8 @@ public class CampanhaDashboard {
 	
 	private LocalDateTime dataCampanha;
 	
+	private LocalDateTime dataFinalizacao;
+	
 	private List<CampanhaAgendada> agendamentos;
 	
 	private String status;
