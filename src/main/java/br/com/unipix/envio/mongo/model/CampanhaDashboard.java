@@ -51,6 +51,8 @@ public class CampanhaDashboard {
 	
 	private List<CampanhaAgendada> agendamentos;
 	
+	private NotificacaoCampanha notificaoCampanha;
+	
 	private String status;
 	
 	private boolean confirmada;
