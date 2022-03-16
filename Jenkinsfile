@@ -17,8 +17,8 @@ pipeline {
         }
         stage ('Run docker') {
             steps {
-                sh ' docker stop sms-envio' 
-                sh ' docker rm sms-envio'
+                //sh ' docker stop sms-envio' 
+                //sh ' docker rm sms-envio'
                 sh ' docker container run --network intranet -v /opt/envio-sms:/opt/envio-sms -h sms-envio -d --name sms-envio -p 8083:8083 vonex/sms_envio:${BUILD_NUMBER}'
             }
         }        
